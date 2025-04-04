@@ -1,25 +1,26 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(LibraryManagement CXX)
+project(LibManagement CXX)
 
-# Set the C++ standard
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-# Add the include directory
+# Add include and source directories
 include_directories(include)
 
-# Add source files
+# List your source files
 set(SOURCES
     src/main.cpp
-    src/book.cpp
-    src/member.cpp
-    src/utils.cpp
+    src/library.cpp
+    # src/book.cpp
+    # src/member.cpp
+    # src/utils.cpp
 )
 
-# Define the executable
-add_executable(LibraryManagement ${SOURCES})
+# Create the executable
+add_executable(LibManagement ${SOURCES})
 
-# Set the output directory for binaries
-set_target_properties(LibraryManagement PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/../build"
+# Set output directory relative to the project root (LibManagement/build)
+set_target_properties(LibManagement PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/build"
 )
