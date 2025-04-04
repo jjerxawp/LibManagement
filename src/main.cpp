@@ -3,8 +3,11 @@
 // #include "members.h"
 #include "library.h"
 
+using namespace std;
+
 
 int main() {
-  showMenu();
+  cout << "Chào mừng đến với Thư viện trường Đại học Khoa học tự nhiên TP.HCM" << endl;
+  menuSwitch();
   return 0;
 }
