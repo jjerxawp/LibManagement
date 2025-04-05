@@ -3,8 +3,7 @@
 #define LIBRARY_H
 
 // Declare menu functions
-int showMenu();
-void menuSwitch();
+void mainMenu();
 // void addBook();
 // void viewBooks();
 // void issueBook();
