@@ -7,6 +7,8 @@ using namespace std;
 
 
 int main() {
+  bookshelvesConstructor();
+  userBaseConstructor();
   cout << "Chào mừng đến với Thư viện trường Đại học Khoa học tự nhiên TP.HCM" << endl;
   mainMenu();
   return 0;

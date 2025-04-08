@@ -5,6 +5,8 @@
 
 // Declare menu functions
 void mainMenu();
+void bookshelvesConstructor();
+void userBaseConstructor();
 // void addBook();
 // void viewBooks();
 // void issueBook();
