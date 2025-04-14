@@ -1,15 +1,12 @@
-#include <iostream>
-// #include "books.h"
-// #include "members.h"
-#include "library.h"
-
-using namespace std;
-
+#include <books.hpp>
+#include <users.hpp>
+#include <library.hpp>
 
 int main() {
-  bookshelvesConstructor();
-  userBaseConstructor();
-  cout << "Chào mừng đến với Thư viện trường Đại học Khoa học tự nhiên TP.HCM" << endl;
-  mainMenu();
+  books myBooks;
+  users myUsers;
+  bookshelvesConstructor(myBooks);
+  userBaseConstructor(myUsers);
+  mainMenu(myBooks, myUsers);
   return 0;
 }
