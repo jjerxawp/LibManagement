@@ -133,50 +133,273 @@ void displayAllBooks(const books &books) {
 }
 
 void addBook(books &books) {
-  int index;
-  cout << "Nhập chỉ số sách (0-" << BOOKCOUNT_MAX - 1 << "): ";
-  cin >> index;
-  if (index < 0 || index >= BOOKCOUNT_MAX) {
-    cout << "Chỉ số không hợp lệ." << endl;
-    return;
+  // Find first empty slot
+  int index = -1;
+  for (int i = 0; i < BOOKCOUNT_MAX; ++i) {
+      bool isEmpty = true;
+      for (size_t j = 0; j < BOOKATT_COUNT; ++j) {
+          if (books[i][j][0] != '\0') {
+              isEmpty = false;
+              break;
+          }
+      }
+      if (isEmpty) {
+          index = i;
+          break;
+      }
   }
-  bool isOccupied = false;
-  for (size_t i = 0; i < BOOKATT_COUNT; ++i) {
-    if (books[index][i][0] != '\0') {
-      isOccupied = true;
-      break;
-    }
+
+  if (index == -1) {
+      cout << "Thư viện đã đầy. Không thể thêm sách." << endl;
+      return;
   }
-  if (isOccupied) {
-    cout << "Vị trí đã có sách. Vui lòng chọn chỉ số khác." << endl;
-    return;
-  }
-  cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
   for (size_t i = 0; i < book_atts.size(); ++i) {
-    cout << "Nhập " << book_atts[i] << ": ";
-    cin.getline(books[index][i].data(), BOOKNAME_MAXLENGTH);
+      cout << "Nhập " << book_atts[i] << ": ";
+      cin.getline(books[index][i].data(), BOOKNAME_MAXLENGTH);
   }
+
   cout << "Đã thêm sách." << endl;
+  displayBook(index, books);
+
+  // Clear buffer before returning
+  // cin.clear();
+  // cin.ignore(numeric_limits<streamsize>::max(), '\n');
+}
+
+int findBookIndexByISBN(const books &books, const char* isbn) {
+    // Find index of ISBN in book_atts
+    size_t isbnAttrIndex = 0;
+    for (size_t i = 0; i < book_atts.size(); ++i) {
+        if (strcmp(book_atts[i], "ISBN") == 0) {
+            isbnAttrIndex = i;
+            break;
+        }
+    }
+
+    // Search for book with matching ISBN
+    for (int i = 0; i < BOOKCOUNT_MAX; ++i) {
+        if (strcmp(books[i][isbnAttrIndex].data(), isbn) == 0) {
+            return i; // Found match, return index
+        }
+    }
+
+    return -1; // Book not found
+}
+
+int findBookIndexByTittle(const books &books, const char* tittle) {
+    // Find index of Title in book_atts
+    size_t titleAttrIndex = 0;
+    for (size_t i = 0; i < book_atts.size(); ++i) {
+        if (strcmp(book_atts[i], "Ten sach") == 0) {
+            titleAttrIndex = i;
+            break;
+        }
+    }
+
+    // Search for book with matching Title
+    for (int i = 0; i < BOOKCOUNT_MAX; ++i) {
+        if (strcmp(books[i][titleAttrIndex].data(), tittle) == 0) {
+            return i; // Found match, return index
+        }
+    }
+
+    return -1; // Book not found
+}
+
+int selectBookAttribute(int n) {
+    // Validate attribute choice
+    if (n < 1 || n > static_cast<int>(book_atts.size())) {
+        cout << "Thuộc tính không hợp lệ." << endl;
+        return -1;
+    }
+
+    // Return zero-based index
+    return n - 1;
+}
+
+int findBook(const books &books) {
+    // Prompt user to choose search method
+    cout << "Tìm sách bằng:" << endl;
+    cout << "1. ISBN" << endl;
+    cout << "2. Tên sách" << endl;
+    cout << "Nhập lựa chọn (1 hoặc 2): ";
+    
+    int choice;
+    while (!(cin >> choice)) {
+        cout << "Vui lòng nhập số (1 hoặc 2): ";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+    cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    // Get search value and find book index
+    int bookIndex = -1;
+    char searchValue[BOOKNAME_MAXLENGTH];
+    
+    if (choice == 1) {
+        cout << "Nhập ISBN: ";
+        cin.getline(searchValue, BOOKNAME_MAXLENGTH);
+        bookIndex = findBookIndexByISBN(books, searchValue);
+    } else if (choice == 2) {
+        cout << "Nhập Tên sách: ";
+        cin.getline(searchValue, BOOKNAME_MAXLENGTH);
+        bookIndex = findBookIndexByTittle(books, searchValue);
+    } else {
+        cout << "Lựa chọn không hợp lệ." << endl;
+        return -1;
+    }
+
+    // Check if book was found
+    if (bookIndex == -1) {
+        cout << "Không tìm thấy sách." << endl;
+        return -1;
+    }
+
+    return bookIndex;
 }
 
 void editBook(books &books) {
-  cout << "Chỉnh sửa sách (chưa triển khai)." << endl;
+    // Find book index using the reusable function
+    int bookIndex = findBook(books);
+    
+    // If no book was found or invalid choice, return
+    if (bookIndex == -1) {
+        return;
+    }
+
+    // Display current book details
+    cout << "Thông tin sách hiện tại:" << endl;
+    displayBook(bookIndex, books);
+
+    // Prompt user to select attribute to edit
+    cout << "Chọn thuộc tính để chỉnh sửa:" << endl;
+    for (size_t i = 0; i < book_atts.size(); ++i) {
+        cout << i + 1 << ". " << book_atts[i] << endl;
+    }
+    cout << "Nhập số thứ tự thuộc tính (1-" << book_atts.size() << "): ";
+    
+    int attrChoice;
+    while (!(cin >> attrChoice)) {
+        cout << "Vui lòng nhập số: ";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+    
+    // Clear newline left by cin >>
+    cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    // Validate attribute choice using selectBookAttribute
+    int attrIndex = selectBookAttribute(attrChoice);
+    if (attrIndex == -1) {
+        return;
+    }
+
+    // Edit the selected attribute
+    cout << "Nhập giá trị mới cho " << book_atts[attrIndex] << ": ";
+    cin.getline(books[bookIndex][attrIndex].data(), BOOKNAME_MAXLENGTH);
+
+    cout << "Đã cập nhật sách." << endl;
+    displayBook(bookIndex, books);
+
+    // Clear buffer before returning
+    // cin.clear();
+    // cin.ignore(numeric_limits<streamsize>::max(), '\n');
 }
 
 void deleteBook(books &books) {
-  cout << "Xóa sách (chưa triển khai)." << endl;
-}
+    // Find book index using the reusable function
+    int bookIndex = findBook(books);
+    
+    // If no book was found or invalid choice, return
+    if (bookIndex == -1) {
+        return;
+    }
 
-void searchBookByISBN(const books &books) {
-  cout << "Tìm kiếm theo ISBN (chưa triển khai)." << endl;
+    // Confirm deletion
+    cout << "Thông tin sách sẽ bị xóa:" << endl;
+    displayBook(bookIndex, books);
+    cout << "Bạn có chắc chắn muốn xóa sách này? (1: Có, 0: Không): ";
+    
+    int confirm;
+    while (!(cin >> confirm)) {
+        cout << "Vui lòng nhập số (1 hoặc 0): ";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+    
+    // Clear the buffer after successful input
+    cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    if (confirm != 1) {
+        cout << "Hủy xóa sách." << endl;
+        return;
+    }
+
+    // Clear the book entry by setting all attributes to empty
+    for (size_t j = 0; j < book_atts.size(); ++j) {
+        books[bookIndex][j].data()[0] = '\0';
+    }
+
+    cout << "Đã xóa sách thành công." << endl;
+
+    // Clear buffer before returning
+    // cin.clear();
+    // cin.ignore(numeric_limits<streamsize>::max(), '\n');
 }
 
 void searchBookByTitle(const books &books) {
-  cout << "Tìm kiếm theo tên sách (chưa triển khai)." << endl;
+  char invalid_prompt[] {"Khong tim thay sach \n"};
+  char option_prompt[] {"Vui long nhap ten sach: \n"};
+  char searchValue[BOOKNAME_MAXLENGTH];
+  
+  cout << option_prompt;
+  cin.getline(searchValue, BOOKNAME_MAXLENGTH);
+  int bookIndex {findBookIndexByTittle(books, searchValue)};
+
+  if (bookIndex >= 0 && bookIndex < BOOKCOUNT_MAX) {
+    displayBook(bookIndex, books);
+    return;
+  } else {
+    cout << invalid_prompt;
+  }
+
+}
+
+void searchBookByISBN(const books &books) {
+  char invalid_prompt[] {"Khong tim thay sach \n"};
+  char option_prompt[] {"Vui long nhap ISBN: \n"};
+  char searchValue[BOOKNAME_MAXLENGTH];
+  
+  cout << option_prompt;
+  cin.getline(searchValue, BOOKNAME_MAXLENGTH);
+  int bookIndex {findBookIndexByISBN(books, searchValue)};
+
+  if (bookIndex >= 0 && bookIndex < BOOKCOUNT_MAX) {
+    displayBook(bookIndex, books);
+    return;
+  } else {
+    cout << invalid_prompt;
+  }
+}
+
+size_t getTotalBooks (const books &books) {
+  size_t total {};
+
+  for (size_t i {0}; i < BOOKCOUNT_MAX; ++i) {
+    if (books[i][0][0] != '\0') {
+      total += atoi(books[i][7].data());
+    } 
+  }
+  return total;
 }
 
 void countTotalBooks(const books &books) {
-  cout << "Thống kê số lượng sách (chưa triển khai)." << endl;
+  size_t total = getTotalBooks(books);
+  cout << "Tổng số lượng sách hiện có của thư viện: " << total << " quyển" << endl;
 }
 
 void countBooksByGenre(const books &books) {

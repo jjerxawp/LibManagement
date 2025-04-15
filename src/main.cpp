@@ -5,8 +5,10 @@
 int main() {
   books myBooks;
   users myUsers;
+  transactions myTrans;
   bookshelvesConstructor(myBooks);
   userBaseConstructor(myUsers);
-  mainMenu(myBooks, myUsers);
+  transactionsConstructor(myTrans);
+  mainMenu(myBooks, myUsers, myTrans);
   return 0;
 }

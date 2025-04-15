@@ -21,3 +21,5 @@ void searchUserByCMND(const users &users);
 void searchUserByName(const users &users);
 void countTotalUsers(const users &users);
 void countUsersByGender(const users &users);
+
+int findUser(const users &users);

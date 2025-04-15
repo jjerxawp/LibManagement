@@ -24,3 +24,5 @@ void searchBookByISBN(const books &books);
 void searchBookByTitle(const books &books);
 void countTotalBooks(const books &books);
 void countBooksByGenre(const books &books);
+
+int findBook(const books &books);
