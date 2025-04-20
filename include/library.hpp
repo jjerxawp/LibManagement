@@ -21,11 +21,12 @@ constexpr int MAX_BORROW_DAYS {7};
 constexpr double DAILY_FINE {5000.0}; // 5,000 VND per day
 constexpr double LOST_BOOK_MULTIPLIER {2.0}; // 200% of book price
 
-extern const array<const char*, 8> transaction_atts;
+extern const array<const char*, 6> transaction_atts;
 
 using transaction = array<array<char, BOOKNAME_MAXLENGTH>, 8>;
 using transactions = array<transaction, TRANSACTION_COUNT_MAX>;
 
+// Menu prototypes
 char printSubMenu(const array<const char*, 6> &subMenuItems);
 void handleReaderSubMenu(char subOption, users &users);
 void handleBookSubMenu(char subOption, books &books);
@@ -35,12 +36,14 @@ int printMenu(const array<const char*, 6> &menuItems);
 void mainMenuSwitch(int option, const array<const char*, 6> &menuItems, books &books, users &users, transactions &trans, bool &exitFlag);
 void mainMenu(books &books, users &users, transactions &trans);
 
-// Stats functions (temporary signatures)
+// Stats functions prototypes
 void countBorrowedBooks(const books &books, const users &users);
 void listOverdueReaders(const users &users);
 
+// Transaction prototypes
 void transactionsConstructor(transactions &trans);
 void createTransaction(transactions &trans, const users &users, books &books);
 void getCurrentDate(char* date);
 void getDueDate(char* date);
 void displayTransaction(int transIndex, const transactions &trans);
+void returnBook(transactions &trans, books &books, users &users);

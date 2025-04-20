@@ -20,7 +20,7 @@ const array<const char*, USERATT_COUNT> user_atts {
 };
 
 void userBaseConstructor(users &users) {
-  const char userbase_prompt[] {"Hoàn tất khởi tạo userbase!"};
+  const char userbase_prompt[] {"Hoan tat khoi tao danh sach doc gia!"};
   
   users = {};
   
@@ -121,7 +121,7 @@ void displayAllUsers(const users &users) {
   cout << "+" << endl;
   
   if (!hasUser) {
-    cout << "Không có người dùng.\n" << endl;
+    cout << "Khong co nguoi dung trong he thong.\n" << endl;
   }
 }
 
@@ -143,16 +143,16 @@ void addUser(users &users) {
   }
 
   if (index == -1) {
-      cout << "Thư viện đã hết chỗ, vui lòng đăng kí lại lần sau" << endl;
+      cout << "Thu vien da het cho, vui long dang ky lai vao luc khac" << endl;
       return;
   }
 
   for (size_t i = 0; i < user_atts.size(); ++i) {
-      cout << "Nhập " << user_atts[i] << ": ";
+      cout << "Nhap " << user_atts[i] << ": ";
       cin.getline(users[index][i].data(), USERNAME_MAXLENGTH);
   }
 
-  cout << "Đã thêm sách." << endl;
+  cout << "Da them nguoi dung." << endl;
   displayUser(index, users);
 
   // Clear buffer before returning
@@ -202,7 +202,7 @@ int findUserIndexByName(const users &users, const char* name) {
 int selectUserAttribute(int n) {
     // Validate attribute choice
     if (n < 1 || n > static_cast<int>(user_atts.size())) {
-        cout << "Thuộc tính không hợp lệ." << endl;
+        cout << "Thuoc tinh khong hop le!" << endl;
         return -1;
     }
 
@@ -212,14 +212,14 @@ int selectUserAttribute(int n) {
 
 int findUser(const users &users) {
     // Prompt user to choose search method
-    cout << "Tìm người dùng theo:" << endl;
+    cout << "Tim nguoi dung theo:" << endl;
     cout << "1. CMND" << endl;
-    cout << "2. Họ và tên" << endl;
-    cout << "Nhập lựa chọn (1 hoặc 2): ";
+    cout << "2. Ho va ten" << endl;
+    cout << "Nhap lua chon (1 hoac 2): ";
     
     int choice;
     while (!(cin >> choice)) {
-        cout << "Vui lòng nhập số (1 hoặc 2): ";
+        cout << "Vui long nhap so (1 hoac 2): ";
         cin.clear();
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
     }
@@ -231,21 +231,21 @@ int findUser(const users &users) {
     char searchValue[USERNAME_MAXLENGTH];
     
     if (choice == 1) {
-        cout << "Nhập CMND: ";
+        cout << "Nhap CMND: ";
         cin.getline(searchValue, USERNAME_MAXLENGTH);
         userIndex = findUserIndexByID(users, searchValue);
     } else if (choice == 2) {
-        cout << "Nhập Tên người dùng: ";
+        cout << "Nhap 'Ten nguoi dung': ";
         cin.getline(searchValue, USERNAME_MAXLENGTH);
         userIndex = findUserIndexByName(users, searchValue);
     } else {
-        cout << "Lựa chọn không hợp lệ." << endl;
+        cout << "Lua chon khong hop le." << endl;
         return -1;
     }
 
     // Check if book was found
     if (userIndex == -1) {
-        cout << "Không tìm thấy người dùng." << endl;
+        cout << "Khong tim thay nguoi dung." << endl;
         return -1;
     }
 
@@ -259,19 +259,19 @@ void editUser(users &users) {
     return;
   }
 
-  cout << "Thông tin người dùng hiện tại: " << endl;
+  cout << "Thong tin nguoi dung hien tai: " << endl;
   displayUser(userIndex, users);
 
   // Prompt user to select attribute to edit
-  cout << "Chọn thuộc tính để chỉnh sửa:" << endl;
+  cout << "Chon thuoc tinh can cap nhat:" << endl;
   for (size_t i = 0; i < user_atts.size(); ++i) {
       cout << i + 1 << ". " << user_atts[i] << endl;
   }
-  cout << "Nhập số thứ tự thuộc tính (1-" << user_atts.size() << "): ";
+  cout << "Nhap so thu tu thuoc tinh (1-" << user_atts.size() << "): ";
   
   int attrChoice;
   while (!(cin >> attrChoice)) {
-      cout << "Vui lòng nhập số: ";
+      cout << "Vui long nhap so: ";
       cin.clear();
       cin.ignore(numeric_limits<streamsize>::max(), '\n');
   }
@@ -287,10 +287,10 @@ void editUser(users &users) {
   }
 
   // Edit the selected attribute
-  cout << "Nhập giá trị mới cho " << user_atts[attrIndex] << ": ";
+  cout << "Nhap gia tri moi cho " << user_atts[attrIndex] << ": ";
   cin.getline(users[userIndex][attrIndex].data(), USERNAME_MAXLENGTH);
 
-  cout << "Đã cập nhật thông tin người dùng." << endl;
+  cout << "Da cap nhat thong tin nguoi dung!" << endl;
   displayUser(userIndex, users);
 
   // Clear buffer before returning
@@ -309,13 +309,13 @@ void deleteUser(users &users) {
     }
 
     // Confirm deletion
-    cout << "Người dùng bên dưới sẽ bị xoá:" << endl;
+    cout << "Nguoi dung ben duoi se bi xoa:" << endl;
     displayUser(userIndex, users);
-    cout << "Bạn có chắc chắn muốn xóa người dùng này này? (1: Có, 0: Không): ";
+    cout << "Xac nhan xoa nguoi dung (1: Co, 0: Khong): ";
     
     int confirm;
     while (!(cin >> confirm)) {
-        cout << "Vui lòng nhập số (1 hoặc 0): ";
+        cout << "Vui long nhap so (1 hoac 0): ";
         cin.clear();
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
     }
@@ -325,7 +325,7 @@ void deleteUser(users &users) {
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
     if (confirm != 1) {
-        cout << "Hủy xóa người dùng." << endl;
+        cout << "Huy xoa nguoi dung." << endl;
         return;
     }
 
@@ -334,7 +334,7 @@ void deleteUser(users &users) {
         users[userIndex][j].data()[0] = '\0';
     }
 
-    cout << "Đã xóa người dùng thành công." << endl;
+    cout << "Da xoa nguoi dung thanh cong!" << endl;
 
     // Clear buffer before returning
     // cin.clear();
@@ -389,7 +389,7 @@ size_t getTotalUser(const users& users) {
 
 void countTotalUsers(const users &users) {
   size_t total = getTotalUser(users);
-  cout << "Tổng số lượng người dùng hiện có của thư viện: " << total << " thành viên." << endl;
+  cout << "Tong so nguoi dung hien tai cua thu vien: " << total << " thanh vien." << endl;
 }
 
 void countUsersByGender(const users &users) {
