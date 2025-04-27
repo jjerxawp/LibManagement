@@ -1,14 +1,14 @@
-#include <books.hpp>
-#include <users.hpp>
-#include <library.hpp>
+#include "books.hpp"
+#include "users.hpp"
+#include "library.hpp"
 
 int main() {
-  books myBooks;
-  users myUsers;
-  transactions myTrans;
-  bookshelvesConstructor(myBooks);
-  userBaseConstructor(myUsers);
-  transactionsConstructor(myTrans);
-  mainMenu(myBooks, myUsers, myTrans);
-  return 0;
+    book myBooks[BOOKCOUNT_MAX];
+    user myUsers[USERCOUNT_MAX];
+    transaction myTrans[TRANSACTION_COUNT_MAX];
+    bookshelvesConstructor(myBooks);
+    userBaseConstructor(myUsers);
+    transactionsConstructor(myTrans);
+    mainMenu(myBooks, myUsers, myTrans);
+    return 0;
 }

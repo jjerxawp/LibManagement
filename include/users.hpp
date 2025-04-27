@@ -1,25 +1,26 @@
 #pragma once
-#include <array>
-
+#include <cstddef>
 using namespace std;
 
 constexpr size_t USERCOUNT_MAX {100};
 constexpr size_t USERNAME_MAXLENGTH {100};
 constexpr size_t USERATT_COUNT {9};
 
-extern const array<const char*, USERATT_COUNT> user_atts;
+extern const char* user_atts[USERATT_COUNT];
 
-using user = array<array<char, USERNAME_MAXLENGTH>, USERATT_COUNT>;
-using users = array<user, USERCOUNT_MAX>;
+// Define user as a 2D array (USERATT_COUNT attributes, each of USERNAME_MAXLENGTH)
+typedef char user[USERATT_COUNT][USERNAME_MAXLENGTH];
+// Define users as a 1D array of user (USERCOUNT_MAX entries)
+typedef user users[USERCOUNT_MAX];
 
-void userBaseConstructor(users &users);
-void displayAllUsers(const users &users);
-void addUser(users &users);
-void editUser(users &users);
-void deleteUser(users &users);
-void searchUserByCMND(const users &users);
-void searchUserByName(const users &users);
-void countTotalUsers(const users &users);
-void countUsersByGender(const users &users);
+void userBaseConstructor(users users);
+void displayAllUsers(const users users);
+void addUser(users users);
+void editUser(users users);
+void deleteUser(users users);
+void searchUserByCMND(const users users);
+void searchUserByName(const users users);
+void countTotalUsers(const users users);
+void countUsersByGender(const users users);
 
-int findUser(const users &users);
+int findUser(const users users);
