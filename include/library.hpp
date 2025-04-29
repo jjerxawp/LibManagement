@@ -38,10 +38,6 @@ int printMenu(const char* menuItems[6]);
 void mainMenuSwitch(int option, const char* menuItems[6], books books, users users, transactions trans, bool &exitFlag);
 void mainMenu(books books, users users, transactions trans);
 
-// Stats functions prototypes
-void countBorrowedBooks(const books books, const users users);
-void listOverdueReaders(const users users);
-
 // Transaction prototypes
 void transactionsConstructor(transactions trans);
 void createTransaction(transactions trans, const users users, books books);
@@ -51,3 +47,4 @@ void displayTransaction(int transIndex, const transactions trans);
 void returnBook(transactions trans, books books, users users);
 void listBorrowedBooks(const transactions trans, const books books, const users users);
 void listOverdueBorrows(const transactions trans, const books books, const users users);
+bool isMembershipExpired(const char* expiryDate, const char* currentDate);

@@ -1,6 +1,8 @@
 #include <iostream>
 #include <iomanip>
 #include <limits>
+#include <ctime>
+#include <cstring>
 #include "users.hpp"
 
 using namespace std;
@@ -20,6 +22,50 @@ const char* user_atts[USERATT_COUNT] = {
     user_att_5, user_att_6, user_att_7, user_att_8
 };
 
+// Ham de kiem tim bi tri trong o vi tri gan nhat tinh tu vi tri [0] trong users array
+int findEmptyUserSlot(const users users) {
+    for (int i = 0; i < USERCOUNT_MAX; ++i) {
+        bool isEmpty = true;
+        for (size_t j = 0; j < USERATT_COUNT; ++j) {
+            if (users[i][j][0] != '\0') {
+                isEmpty = false;
+                break;
+            }
+        }
+        if (isEmpty) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+// Ham de lay ngay hien tai va format theo dinh dang DD/MM/YYYY
+void getCurrentDate(char* date, size_t length) {
+    time_t now = time(nullptr);
+    tm* local_time = localtime(&now);
+    strftime(date, length, "%d/%m/%Y", local_time);
+}
+
+// Ham de lay ngay cach ngay hien tai 48 thang cho gia tri 'Ngay het han' cua the doc gia
+void getExpiryDate(char* expiryDate, size_t length, const char* startDate) {
+    tm time_struct = {};
+    sscanf(startDate, "%d/%d/%d", &time_struct.tm_mday, &time_struct.tm_mon, &time_struct.tm_year);
+    time_struct.tm_mon -= 1; 
+    time_struct.tm_year -= 1900; 
+    
+    time_struct.tm_mon += 48;
+    while (time_struct.tm_mon >= 12) {
+        time_struct.tm_mon -= 12;
+        time_struct.tm_year += 1;
+    }
+    
+    time_t expiry_time = mktime(&time_struct);
+    tm* expiry_tm = localtime(&expiry_time);
+    strftime(expiryDate, length, "%d/%m/%Y", expiry_tm);
+}
+
+// Ham khoi tao users array
+// users users --> 3D C-array chua [Nguoi dung][Thuoc tinh nguoi dung][Gia tri cua thuoc tinh]
 void userBaseConstructor(users users) {
     const char userbase_prompt[] {"Hoan tat khoi tao danh sach doc gia!"};
     
@@ -28,20 +74,21 @@ void userBaseConstructor(users users) {
             users[i][j][0] = '\0';
         }
     }
-    
-    strncpy(users[0][0], "DG001", USERNAME_MAXLENGTH);
-    strncpy(users[0][1], "Nguyen Van A", USERNAME_MAXLENGTH);
-    strncpy(users[0][2], "123456789", USERNAME_MAXLENGTH);
-    strncpy(users[0][3], "01/01/1990", USERNAME_MAXLENGTH);
-    strncpy(users[0][4], "Nam", USERNAME_MAXLENGTH);
-    strncpy(users[0][5], "nva@example.com", USERNAME_MAXLENGTH);
-    strncpy(users[0][6], "Hanoi", USERNAME_MAXLENGTH);
-    strncpy(users[0][7], "01/01/2023", USERNAME_MAXLENGTH);
-    strncpy(users[0][8], "01/01/2024", USERNAME_MAXLENGTH);
+    // Dummy data
+    // strncpy(users[0][0], "DG001", USERNAME_MAXLENGTH);
+    // strncpy(users[0][1], "Nguyen Van A", USERNAME_MAXLENGTH);
+    // strncpy(users[0][2], "123456789", USERNAME_MAXLENGTH);
+    // strncpy(users[0][3], "01/01/1990", USERNAME_MAXLENGTH);
+    // strncpy(users[0][4], "Nam", USERNAME_MAXLENGTH);
+    // strncpy(users[0][5], "nva@example.com", USERNAME_MAXLENGTH);
+    // strncpy(users[0][6], "Hanoi", USERNAME_MAXLENGTH);
+    // strncpy(users[0][7], "01/01/2019", USERNAME_MAXLENGTH);
+    // strncpy(users[0][8], "01/01/2021", USERNAME_MAXLENGTH);
     
     cout << ".\n.\n" << userbase_prompt << "\n.\n.\n";
 }
 
+// Ham de print out header cua user table
 void printUserTableHeader() {
     const int colWidth = 20;
     cout << left;
@@ -62,6 +109,9 @@ void printUserTableHeader() {
     cout << "+" << endl;
 }
 
+// Ham dung de print tung row cua user[thuoc tinh][gia tri thuoc tinh]
+// int userIndex --> index cua user trong users array
+// users users --> 3D C-array chua [Nguoi dung][Thuoc tinh nguoi dung][Gia tri cua thuoc tinh]
 void printUserRow(int userIndex, const users users) {
     const int colWidth = 20;
     cout << left;
@@ -79,6 +129,9 @@ void printUserRow(int userIndex, const users users) {
     cout << "|" << endl;
 }
 
+// Ham dung de print out header cua user table + row cua user theo index
+// int userIndex --> index cua user trong users array
+// users users --> 3D C-array chua [Nguoi dung][Thuoc tinh nguoi dung][Gia tri cua thuoc tinh]
 void displayUser(int userIndex, const users users) {
     char invalid_index_prompt[] {"Invalid index.\n"};
     if (userIndex < 0 || userIndex >= USERCOUNT_MAX) {
@@ -95,6 +148,8 @@ void displayUser(int userIndex, const users users) {
     cout << "+" << endl;
 }
 
+// Ham dung de print out header kem tat ca records trong users array
+// users users --> 3D C-array chua [Nguoi dung][Thuoc tinh nguoi dung][Gia tri cua thuoc tinh]
 void displayAllUsers(const users users) {
     bool hasUser = false;
     
@@ -125,39 +180,41 @@ void displayAllUsers(const users users) {
     }
 }
 
-void addUser(users users) {
-    int index = -1;
-    for (int i = 0; i < USERCOUNT_MAX; ++i) {
-        bool isEmpty = true;
-        for (size_t j = 0; j < USERATT_COUNT; ++j) {
-            if (users[i][j][0] != '\0') {
-                isEmpty = false;
-                break;
-            }
-        }
-        if (isEmpty) {
-            index = i;
-            break;
-        }
-    }
+// Ham dung de add them user vao array
+// users users --> 3D C-array chua [Nguoi dung][Thuoc tinh nguoi dung][Gia tri cua thuoc tinh]
 
+void addUser(users users) {
+    int index = findEmptyUserSlot(users);
     if (index == -1) {
         cout << "Thu vien da het cho, vui long dang ky lai vao luc khac" << endl;
         return;
     }
 
-    cin.clear();
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-
-    for (size_t i = 0; i < USERATT_COUNT; ++i) {
+    // Yeu cau user nhap day du cac thong tin cua the sach
+    for (size_t i = 0; i < USERATT_COUNT - 2; ++i) {
         cout << "Nhap " << user_atts[i] << ": ";
         cin.getline(users[index][i], USERNAME_MAXLENGTH);
     }
+
+    // Gan ngay lap the doc gia voi ngay hien tai
+    char currentDate[11];
+    getCurrentDate(currentDate, sizeof(currentDate));
+    strncpy(users[index][7], currentDate, USERNAME_MAXLENGTH);
+    users[index][7][USERNAME_MAXLENGTH - 1] = '\0';
+
+    // Tinh toan ngay het han cua the doc gia
+    char expiryDate[11];
+    getExpiryDate(expiryDate, sizeof(expiryDate), currentDate);
+    strncpy(users[index][8], expiryDate, USERNAME_MAXLENGTH);
+    users[index][8][USERNAME_MAXLENGTH - 1] = '\0';
 
     cout << "Da them nguoi dung." << endl;
     displayUser(index, users);
 }
 
+// Ham dung de tim userIndex theo CMND
+// users users --> 3D C-array chua [Nguoi dung][Thuoc tinh nguoi dung][Gia tri cua thuoc tinh]
+// const char* cmnd --> pointer tro den gia tri CMND de lookup
 int findUserIndexByID(const users users, const char* cmnd) {
     size_t idIndex = 0;
     for (size_t i = 0; i < USERATT_COUNT; ++i) {
@@ -176,6 +233,9 @@ int findUserIndexByID(const users users, const char* cmnd) {
     return -1;
 }
 
+// Ham dung de tim userIndex theo Ho va Ten
+// users users --> 3D C-array chua [Nguoi dung][Thuoc tinh nguoi dung][Gia tri cua thuoc tinh]
+// const char* name --> pointer tro den gia tri 'Ho va Ten' de lookup
 int findUserIndexByName(const users users, const char* name) {
     size_t nameIndex = 0;
     for (size_t i = 0; i < USERATT_COUNT; ++i) {
@@ -194,6 +254,9 @@ int findUserIndexByName(const users users, const char* name) {
     return -1;
 }
 
+// Ham dung de prompt user chon thuoc tinh de edit
+// int n --> gia tri dung de kiem tra tinh hon le
+// return type: int --> tra ve index thuoc tinh cua user[thuoc tinh]
 int selectUserAttribute(int n) {
     if (n < 1 || n > USERATT_COUNT) {
         cout << "Thuoc tinh khong hop le!" << endl;
@@ -203,6 +266,8 @@ int selectUserAttribute(int n) {
     return n - 1;
 }
 
+// Ham dung de tim kiem user, dong thoi cho option tim kim theo CMND hoac Ho va Ten
+// users users --> 3D C-array chua [Nguoi dung][Thuoc tinh nguoi dung][Gia tri cua thuoc tinh]
 int findUser(const users users) {
     cout << "Tim nguoi dung theo:" << endl;
     cout << "1. CMND" << endl;
@@ -242,6 +307,8 @@ int findUser(const users users) {
     return userIndex;
 }
 
+// Ham dung de chinh sua thong tin doc gia
+// users users --> 3D C-array chua [Nguoi dung][Thuoc tinh nguoi dung][Gia tri cua thuoc tinh]
 void editUser(users users) {
     int userIndex = findUser(users);
 
@@ -280,6 +347,8 @@ void editUser(users users) {
     displayUser(userIndex, users);
 }
 
+// Ham dung de xoa doc gia
+// users users --> 3D C-array chua [Nguoi dung][Thuoc tinh nguoi dung][Gia tri cua thuoc tinh]
 void deleteUser(users users) {
     int userIndex = findUser(users);
     
@@ -313,6 +382,8 @@ void deleteUser(users users) {
     cout << "Da xoa nguoi dung thanh cong!" << endl;
 }
 
+// Ham dung de tim thong tin doc gia theo CMND
+// users users --> 3D C-array chua [Nguoi dung][Thuoc tinh nguoi dung][Gia tri cua thuoc tinh]
 void searchUserByCMND(const users users) {
     char invalid_prompt[] {"Khong tim thay nguoi dung \n"};
     char option_prompt[] {"Vui long nhap CMND nguoi dung: \n"};
@@ -330,6 +401,8 @@ void searchUserByCMND(const users users) {
     }
 }
 
+// Ham dung de tim thong tin doc gia theo Ho va Ten
+// users users --> 3D C-array chua [Nguoi dung][Thuoc tinh nguoi dung][Gia tri cua thuoc tinh]
 void searchUserByName(const users users) {
     char invalid_prompt[] {"Khong tim thay nguoi dung \n"};
     char option_prompt[] {"Vui long nhap ten nguoi dung: \n"};
@@ -347,7 +420,9 @@ void searchUserByName(const users users) {
     }
 }
 
-// Helper function to check if a value is in an array of strings
+// Ham dung de check xem gia tri tham so co xuat hien trong mot field cua mang nguoi dung (user) hay khong
+// Tham so dau vao la pointer point den char[] cua gia tri can kiem tra: const char* value
+// C array cua mang can kiem tra gia tri cua thuoc tinh: const char values[][USERNAME_MAXLENGTH]
 bool isValueInArray(const char* value, const char values[][USERNAME_MAXLENGTH], size_t count) {
     for (size_t i = 0; i < count; ++i) {
         if (strcmp(values[i], value) == 0) {
@@ -357,7 +432,10 @@ bool isValueInArray(const char* value, const char values[][USERNAME_MAXLENGTH], 
     return false;
 }
 
-// Modified getTotalUser to count users for a specific attribute value
+// Ham dung de count nguoi dung theo tham so thuoc tinh
+// users users --> 3D C-array chua [Nguoi dung][Thuoc tinh nguoi dung][Gia tri cua thuoc tinh]
+// size_t attr_index --> index cua thuoc tinh trong mang
+// const char* value --> pointer tro den gia tri can group de tinh tong so luong sach
 size_t getTotalUser(const users users, size_t attr_index, const char* value) {
     size_t total = 0;
     for (size_t i = 0; i < USERCOUNT_MAX; ++i) {
@@ -368,25 +446,29 @@ size_t getTotalUser(const users users, size_t attr_index, const char* value) {
     return total;
 }
 
-// Overload for total user count (no attribute filtering)
+// Overload function cua ham count nguoi dung, nhung khong cam tham so thuoc tinh
+// users users --> 3D C-array chua [Nguoi dung][Thuoc tinh nguoi dung][Gia tri cua thuoc tinh]
 size_t getTotalUser(const users users) {
-    return getTotalUser(users, 0, users[0][0]); // Count all valid users
+    return getTotalUser(users, 0, users[0][0]);
 }
 
+// Ham thuc thi, print table theo format --> Tong so doc gia hien co trong thu vien
+// users users --> 3D C-array chua [Nguoi dung][Thuoc tinh nguoi dung][Gia tri cua thuoc tinh]
 void countTotalUsers(const users users) {
-    // Table formatting
+    // Khai bao format cua table
     const int label_width = 30;
     const int count_width = 15;
 
-    // Count total users
+    // Goi ham count nguoi dung getTotalUser(), khong can tham so thuoc tinh
     size_t total = getTotalUser(users);
 
-    // Print table
+    // Print out head cua bang thong ke
     cout << left;
     cout << "+" << string(label_width + 2, '-') << "+" << string(count_width + 2, '-') << "+" << endl;
     cout << "| " << setw(label_width) << "Thong ke" << " | " << setw(count_width) << "So luong" << " |" << endl;
     cout << "+" << string(label_width + 2, '-') << "+" << string(count_width + 2, '-') << "+" << endl;
 
+    // Print out noi dung cua thong ke
     if (total == 0) {
         cout << "Khong co nguoi dung trong he thong." << endl;
     } else {
@@ -396,13 +478,15 @@ void countTotalUsers(const users users) {
     cout << "+" << string(label_width + 2, '-') << "+" << string(count_width + 2, '-') << "+" << endl;
 }
 
+// Ham thuc thi dem so luong doc gia theo gioi tinh, print out thong ke theo dang table
+// users users --> 3D C-array chua [Nguoi dung][Thuoc tinh nguoi dung][Gia tri cua thuoc tinh]
 void countUsersByGender(const users users) {
-    // Array to store unique genders
+    // Khai bao mang chua cac gia tri unique cua mien (field) gioi tinh
     char unique_genders[USERCOUNT_MAX][USERNAME_MAXLENGTH];
     size_t gender_counts[USERCOUNT_MAX];
     size_t unique_count = 0;
 
-    // Collect unique genders (Gioi tinh, index 4)
+    // Trich xuat cac gia tri unique cua mien (field) gioi tinh
     for (size_t i = 0; i < USERCOUNT_MAX; ++i) {
         if (users[i][0][0] != '\0' && users[i][4][0] != '\0') {
             if (!isValueInArray(users[i][4], unique_genders, unique_count)) {
@@ -414,15 +498,17 @@ void countUsersByGender(const users users) {
         }
     }
 
-    // Table formatting
+    // Khai bai format cua table 
     const int gender_width = 30;
     const int count_width = 15;
 
+    // Print out table header
     cout << left;
     cout << "+" << string(gender_width + 2, '-') << "+" << string(count_width + 2, '-') << "+" << endl;
     cout << "| " << setw(gender_width) << "Gioi tinh" << " | " << setw(count_width) << "So luong" << " |" << endl;
     cout << "+" << string(gender_width + 2, '-') << "+" << string(count_width + 2, '-') << "+" << endl;
 
+    // Print out noi duung thong ke 
     if (unique_count == 0) {
         cout << "Khong co nguoi dung trong he thong." << endl;
     } else {

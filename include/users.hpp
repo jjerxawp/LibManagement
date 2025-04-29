@@ -24,3 +24,6 @@ void countTotalUsers(const users users);
 void countUsersByGender(const users users);
 
 int findUser(const users users);
+int findEmptyUserSlot(const users users);
+void getCurrentDate(char* date, size_t length);
+void getExpiryDate(char* expiryDate, size_t length, const char* startDate);

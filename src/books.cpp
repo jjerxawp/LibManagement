@@ -21,7 +21,9 @@ const char* book_atts[BOOKATT_COUNT] = {
     book_att_4, book_att_5, book_att_6, book_att_7
 };
 
-// Helper function to normalize ISBN: convert to lowercase and remove all whitespace
+// Ham dung de lowercase va xoa whitespace cua ISBN input, tien cho viec kiem tra va tim kiem
+// char* isbn --> pointer tro den gia tri cua ISBN can kiem tra
+// size_t maxLength --> so ky tu toi da cho gia tri cua thuoc tinh
 void normalizeISBN(char* isbn, size_t maxLength) {
     char temp[BOOKNAME_MAXLENGTH];
     size_t j = 0;
@@ -36,7 +38,9 @@ void normalizeISBN(char* isbn, size_t maxLength) {
     isbn[maxLength - 1] = '\0';
 }
 
-// Helper function to validate if a string is numeric (contains only digits)
+// Ham dung de kiem tra tham so co o dang so nguyen hay khong
+// const char* str --> pointer tro den gia tri can kiem tra
+// return type: bool --> true neu gia tri kiem tra co the convert sang so nguyen
 bool isValidNumeric(const char* str) {
     if (str[0] == '\0') return false;
     for (size_t i = 0; str[i] != '\0'; ++i) {
@@ -45,7 +49,9 @@ bool isValidNumeric(const char* str) {
     return true;
 }
 
-// Helper function to validate if a string is non-empty (not just whitespace)
+// Ham kiem tra gia tri tham so co la chuoi empty string hay khong
+// const char* str --> pointer tro den gia tri can kiem tra
+// return type: bool --> true neu gia tri kiem tra co chua du lieu
 bool isNonEmptyString(const char* str) {
     if (str[0] == '\0') return false;
     for (size_t i = 0; str[i] != '\0'; ++i) {
@@ -54,7 +60,8 @@ bool isNonEmptyString(const char* str) {
     return false;
 }
 
-// Function to find an empty slot for a new book
+// Ham tim vi tri trong gan nhat trong books array
+// books books --> 3D C-array [Sach][Thuoc tinh cua sach][Gia tri thuoc tinh]
 int findEmptySlot(const books books) {
     for (int i = 0; i < BOOKCOUNT_MAX; ++i) {
         bool isEmpty = true;
@@ -71,6 +78,8 @@ int findEmptySlot(const books books) {
     return -1;
 }
 
+// Ham thuc thi, dung de khoi tao 3D C-array de chua thong tin cac cuon sach
+// books books --> 3D C-array [Sach][Thuoc tinh cua sach][Gia tri thuoc tinh]
 void bookshelvesConstructor(books books) {
     const char bookshelves_prompt[] {"Hoan tat khoi tao ke sach!"};
     
@@ -80,29 +89,31 @@ void bookshelvesConstructor(books books) {
         }
     }
     
-    strncpy(books[0][0], "0", BOOKNAME_MAXLENGTH);
-    normalizeISBN(books[0][0], BOOKNAME_MAXLENGTH);
-    strncpy(books[0][1], "The Great Gatsby", BOOKNAME_MAXLENGTH);
-    strncpy(books[0][2], "F. Scott Fitzgerald", BOOKNAME_MAXLENGTH);
-    strncpy(books[0][3], "Scribner", BOOKNAME_MAXLENGTH);
-    strncpy(books[0][4], "1925", BOOKNAME_MAXLENGTH);
-    strncpy(books[0][5], "Fiction", BOOKNAME_MAXLENGTH);
-    strncpy(books[0][6], "100000", BOOKNAME_MAXLENGTH);
-    strncpy(books[0][7], "5", BOOKNAME_MAXLENGTH);
+    // Dummy data
+    // strncpy(books[0][0], "0", BOOKNAME_MAXLENGTH);
+    // normalizeISBN(books[0][0], BOOKNAME_MAXLENGTH);
+    // strncpy(books[0][1], "The Great Gatsby", BOOKNAME_MAXLENGTH);
+    // strncpy(books[0][2], "F. Scott Fitzgerald", BOOKNAME_MAXLENGTH);
+    // strncpy(books[0][3], "Scribner", BOOKNAME_MAXLENGTH);
+    // strncpy(books[0][4], "1925", BOOKNAME_MAXLENGTH);
+    // strncpy(books[0][5], "Fiction", BOOKNAME_MAXLENGTH);
+    // strncpy(books[0][6], "100000", BOOKNAME_MAXLENGTH);
+    // strncpy(books[0][7], "5", BOOKNAME_MAXLENGTH);
 
-    strncpy(books[1][0], "1", BOOKNAME_MAXLENGTH);
-    normalizeISBN(books[1][0], BOOKNAME_MAXLENGTH);
-    strncpy(books[1][1], "1984", BOOKNAME_MAXLENGTH);
-    strncpy(books[1][2], "George Orwell", BOOKNAME_MAXLENGTH);
-    strncpy(books[1][3], "Penguin", BOOKNAME_MAXLENGTH);
-    strncpy(books[1][4], "1949", BOOKNAME_MAXLENGTH);
-    strncpy(books[1][5], "Dystopian", BOOKNAME_MAXLENGTH);
-    strncpy(books[1][6], "200000", BOOKNAME_MAXLENGTH);
-    strncpy(books[1][7], "3", BOOKNAME_MAXLENGTH);
+    // strncpy(books[1][0], "1", BOOKNAME_MAXLENGTH);
+    // normalizeISBN(books[1][0], BOOKNAME_MAXLENGTH);
+    // strncpy(books[1][1], "1984", BOOKNAME_MAXLENGTH);
+    // strncpy(books[1][2], "George Orwell", BOOKNAME_MAXLENGTH);
+    // strncpy(books[1][3], "Penguin", BOOKNAME_MAXLENGTH);
+    // strncpy(books[1][4], "1949", BOOKNAME_MAXLENGTH);
+    // strncpy(books[1][5], "Dystopian", BOOKNAME_MAXLENGTH);
+    // strncpy(books[1][6], "200000", BOOKNAME_MAXLENGTH);
+    // strncpy(books[1][7], "3", BOOKNAME_MAXLENGTH);
 
     cout << ".\n.\n" << bookshelves_prompt << endl;
 }
 
+// Ham dung de print table header, voi gia tri header la cac thuoc tinh cua book array
 void printTableHeader() {
     const int colWidth = 20;
     cout << left;
@@ -123,6 +134,9 @@ void printTableHeader() {
     cout << "+" << endl;
 }
 
+// Ham dung de print tung record book trong books 3D-array
+// int bookIndex --> index cua book trong books
+// books books --> 3D C-array [Sach][Thuoc tinh cua sach][Gia tri thuoc tinh]
 void printBookRow(int bookIndex, const books books) {
     const int colWidth = 20;
     cout << left;
@@ -140,6 +154,9 @@ void printBookRow(int bookIndex, const books books) {
     cout << "|" << endl;
 }
 
+// Ham ket hop giua 'printTableHeader' va 'printBookRow' --> Print book record o table format voi header + record
+// int bookIndex --> index cua book trong books
+// books books --> 3D C-array [Sach][Thuoc tinh cua sach][Gia tri thuoc tinh]
 void displayBook(int bookIndex, const books books) {
     char invalid_index_prompt[] {"Invalid index.\n"};
     if (bookIndex < 0 || bookIndex >= BOOKCOUNT_MAX) {
@@ -156,6 +173,8 @@ void displayBook(int bookIndex, const books books) {
     cout << "+" << endl;
 }
 
+// Print out header + tat ca cac record co trong 3D-array books
+// books books --> 3D C-array [Sach][Thuoc tinh cua sach][Gia tri thuoc tinh]
 void displayAllBooks(const books books) {
     bool hasBooks = false;
     
@@ -186,6 +205,8 @@ void displayAllBooks(const books books) {
     }
 }
 
+// Ham dung de them book vao books 3D-array
+// books books --> 3D C-array [Sach][Thuoc tinh cua sach][Gia tri thuoc tinh]
 void addBook(books books) {
     int index = findEmptySlot(books);
     if (index == -1) {
@@ -336,6 +357,10 @@ void addBook(books books) {
     displayBook(index, books);
 }
 
+// Ham dung de tim index cua book theo ISBN
+// Return type: index cua book trong books 3D-array
+// books books --> 3D C-array [Sach][Thuoc tinh cua sach][Gia tri thuoc tinh]
+// const char* isbn --> pointer tro den gia tri cua ISBN can tim
 int findBookIndexByISBN(const books books, const char* isbn) {
     size_t isbnAttrIndex = 0;
     for (size_t i = 0; i < BOOKATT_COUNT; ++i) {
@@ -360,6 +385,10 @@ int findBookIndexByISBN(const books books, const char* isbn) {
     return -1;
 }
 
+// Ham dung de tim index cua book theo ISBN
+// Return type: index cua book trong books 3D-array
+// books books --> 3D C-array [Sach][Thuoc tinh cua sach][Gia tri thuoc tinh]
+// const char* tittle --> pointer tro den gia tri cua 'Ten sach' can tim
 int findBookIndexByTittle(const books books, const char* tittle) {
     size_t titleAttrIndex = 0;
     for (size_t i = 0; i < BOOKATT_COUNT; ++i) {
@@ -378,6 +407,9 @@ int findBookIndexByTittle(const books books, const char* tittle) {
     return -1;
 }
 
+// Ham dung de tim index cua thuoc tinh book[thuoc tinh], phuc vu cho chon thuoc tinh de edit
+// int n --> input cua user
+// return type: int --> index cua thuoc tinh trong book[thuoc tinh]
 int selectBookAttribute(int n) {
     if (n < 1 || n > BOOKATT_COUNT) {
         cout << "Thuoc tinh khong hop le" << endl;
@@ -387,6 +419,9 @@ int selectBookAttribute(int n) {
     return n - 1;
 }
 
+// Ham dung de tim book trong books 3D-array
+// books books --> 3D C-array [Sach][Thuoc tinh cua sach][Gia tri thuoc tinh]
+// Return type: int --> index cua book can tim trong books 3D-array
 int findBook(const books books) {
     cout << "Tim sach theo:" << endl;
     cout << "1. ISBN" << endl;
@@ -427,6 +462,8 @@ int findBook(const books books) {
     return bookIndex;
 }
 
+// Ham dung de thay doi thuoc tinh cua mot sach
+// books books --> 3D C-array [Sach][Thuoc tinh cua sach][Gia tri thuoc tinh]
 void editBook(books books) {
     int bookIndex = findBook(books);
     
@@ -508,6 +545,8 @@ void editBook(books books) {
     displayBook(bookIndex, books);
 }
 
+// Ham dung de xoa book trong books 3D-array
+// books books --> 3D C-array [Sach][Thuoc tinh cua sach][Gia tri thuoc tinh]
 void deleteBook(books books) {
     int bookIndex = findBook(books);
     
@@ -541,6 +580,8 @@ void deleteBook(books books) {
     cout << "Da xoa sach thanh cong!" << endl;
 }
 
+// Ham dung de tim sach va hien thi ra console theo 'Ten sach'
+// books books --> 3D C-array [Sach][Thuoc tinh cua sach][Gia tri thuoc tinh]
 void searchBookByTitle(const books books) {
     char invalid_prompt[] {"Khong tim thay sach \n"};
     char option_prompt[] {"Vui long nhap ten sach: \n"};
@@ -558,6 +599,8 @@ void searchBookByTitle(const books books) {
     }
 }
 
+// Ham dung de tim sach va hien thi ra console theo 'ISBN'
+// books books --> 3D C-array [Sach][Thuoc tinh cua sach][Gia tri thuoc tinh]
 void searchBookByISBN(const books books) {
     char invalid_prompt[] {"Khong tim thay sach \n"};
     char option_prompt[] {"Vui long nhap ISBN: \n"};
@@ -576,7 +619,10 @@ void searchBookByISBN(const books books) {
     }
 }
 
-// Helper function to check if a value is in an array of strings
+// Ham phu tro dung de kiem tra xem mot char[] co xuat hien trong book[thuoc tinh][gia tri thuoc tinh]
+// return type: bool --> true neu tim thay
+// const char* value --> pointer tro den gia tri tim kiem
+// const char values[][BOOKNAME_MAXLENGTH] --> vi tri cua gia tri thuoc tinh can kiem tra
 bool isValueInArray(const char* value, const char values[][BOOKNAME_MAXLENGTH], size_t count) {
     for (size_t i = 0; i < count; ++i) {
         if (strcmp(values[i], value) == 0) {
@@ -586,7 +632,11 @@ bool isValueInArray(const char* value, const char values[][BOOKNAME_MAXLENGTH], 
     return false;
 }
 
-// Modified getTotalBooks to return total copies for a specific attribute value
+// ham dung de dem so luong sach theo mot tham so thuoc tinh
+// books books --> 3D C-array [Sach][Thuoc tinh cua sach][Gia tri thuoc tinh]
+// size_t attr_index --> index cua thuoc tinh can group trong book array
+// const char* value --> gia tri can kiem tra
+// Return type: size_t --> count number: gia tri so quyen
 size_t getTotalBooks(const books books, size_t attr_index, const char* value) {
     size_t total = 0;
     for (size_t i = 0; i < BOOKCOUNT_MAX; ++i) {
@@ -597,6 +647,8 @@ size_t getTotalBooks(const books books, size_t attr_index, const char* value) {
     return total;
 }
 
+// Ham dung de dem so luong cuon sach trong thu vien (books 3D-array)
+// books books --> 3D C-array [Sach][Thuoc tinh cua sach][Gia tri thuoc tinh]
 void countTotalBooks(const books books) {
     // Table formatting
     const int label_width = 30;
@@ -625,6 +677,8 @@ void countTotalBooks(const books books) {
     cout << "+" << string(label_width + 2, '-') << "+" << string(count_width + 2, '-') << "+" << endl;
 }
 
+// Ham dung de dem so luong cuon sach trong thu vien (books 3D-array), group theo 'The loai' va hien thi theo dang bang
+// books books --> 3D C-array [Sach][Thuoc tinh cua sach][Gia tri thuoc tinh]
 void countBooksByGenre(const books books) {
     // Array to store unique genres
     char unique_genres[BOOKCOUNT_MAX][BOOKNAME_MAXLENGTH];

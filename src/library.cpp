@@ -1,10 +1,18 @@
 #include <iostream>
 #include <iomanip>
+#include <cstring>
+#include <ctime>
+#include <limits>
 #include "library.hpp"
 #include "books.hpp"
 #include "users.hpp"
-#include <cstring>
+
 using namespace std;
+
+/***************************************************************************************************************************************
+                                                      Menu value declaration
+ ***************************************************************************************************************************************/
+
 const char dashLine[] = "------------------------------------------------------------";
 
 const char main1[] = "Quan ly doc gia";
@@ -43,7 +51,10 @@ const char* subMenuItems5[6] = {sub5_a, sub5_b, sub5_c, sub5_d, sub5_e, sub5_f};
                                                       Menu
  ***************************************************************************************************************************************/
 
+// Vi cac chuc nang 1, 2, 5 deu co tong cong 5 chuc nang phu --> Co the dung 1 function duy nhat de print out options
+// const char* subMenuItems[6] --> c array[6] chua cac gia tri cua subMenuItems
 char printSubMenu(const char* subMenuItems[6]) {
+    // Declare cac noi dung hien thi
     const char notice_prompt[] {"Danh sach thao tac: "};
     const char select_prompt[] {"Vui long chon thao tac ban muon thuc hien: "};
     const char invalid_prompt[] {"Vui long chon mot tuy chon hop le (a-f): "};
@@ -70,6 +81,10 @@ char printSubMenu(const char* subMenuItems[6]) {
     cout << dashLine << endl;
     return subOption;
 }
+
+// switch-case khi user chon chuc nang phu trong nhom 'Quan ly nguoi dung'
+// char subOption --> subOption la input ma user da chon 
+// users users --> 3D C-array chua [Nguoi dung][Thuoc tinh nguoi dung][Gia tri cua thuoc tinh]
 
 void handleReaderSubMenu(char subOption, users users) {
     const char notice_prompt[] = "Ban da chon: ";
@@ -104,6 +119,9 @@ void handleReaderSubMenu(char subOption, users users) {
     }
 }
 
+// switch-case khi user chon chuc nang phu trong nhom 'Quan ly sach'
+// char subOption --> subOption la input ma user da chon 
+// books books --> 3D C-array [Sach][Thuoc tinh cua sach][Gia tri thuoc tinh]
 void handleBookSubMenu(char subOption, books books) {
     const char notice_prompt[] = "Ban da chon: ";
     switch (tolower(subOption)) {
@@ -137,6 +155,11 @@ void handleBookSubMenu(char subOption, books books) {
     }
 }
 
+// switch-case khi user chon chuc nang phu trong nhom 'Cac thong ke co ban'
+// char subOption --> subOption la input ma user da chon 
+// users users --> 3D C-array chua [Nguoi dung][Thuoc tinh nguoi dung][Gia tri cua thuoc tinh]
+// books books --> 3D C-array [Sach][Thuoc tinh cua sach][Gia tri thuoc tinh]
+// transactions trans --> 3D C-array [Giao dich][Thuoc tinh cua giao dich][Gia tri thuoc tinh]
 void handleStatsSubMenu(char subOption, const transactions trans, const books books, const users users) {
     const char notice_prompt[] = "Ban da chon: ";
     switch (tolower(subOption)) {
@@ -170,6 +193,12 @@ void handleStatsSubMenu(char subOption, const transactions trans, const books bo
     }
 }
 
+// switch-case khi user chon cac nhom chuc nang 1, 2, 5
+// char mainOption --> mainOption la input ma user da chon
+// const char* subMenuItems[6] --> array chua cac pointer den cac gia tri cua subMenu, tuy thuoc vao Menu-SubMenu ma user da chon
+// users users --> 3D C-array chua [Nguoi dung][Thuoc tinh nguoi dung][Gia tri cua thuoc tinh]
+// books books --> 3D C-array [Sach][Thuoc tinh cua sach][Gia tri thuoc tinh]
+// transactions trans --> 3D C-array [Giao dich][Thuoc tinh cua giao dich][Gia tri thuoc tinh]
 void subMenu(int mainOption, const char* subMenuItems[6], transactions trans, books books, users users) {
     const char invalid_prompt[] = "Lua chon khong hop le, vui long chon lai.";
     char subOption;
@@ -196,6 +225,9 @@ void subMenu(int mainOption, const char* subMenuItems[6], transactions trans, bo
     } while (true);
 }
 
+// Print out noi dung menu, dong thoi lay lua chon tu nguoi dung de truyen cho function mainMenuSwitch()
+// return int option --> truyen cho ham mainMenuSwitch()
+// const char* menuItems[6] --> C-array chua cac cac pointer tro den noi dung cua cac chuc nang cua Menu
 int printMenu(const char* menuItems[6]) {
     int option {0};
     bool validInput = false;
@@ -226,6 +258,12 @@ int printMenu(const char* menuItems[6]) {
     return option;
 }
 
+// switch-case cua main Menu, switch to sub-option
+// int option --> tham so tu printMenu() dung lam switch
+// const char* menuItems[6] --> array chua cac noi dung chuc nang cua Main Menu
+// users users --> 3D C-array chua [Nguoi dung][Thuoc tinh nguoi dung][Gia tri cua thuoc tinh]
+// books books --> 3D C-array [Sach][Thuoc tinh cua sach][Gia tri thuoc tinh]
+// transactions trans --> 3D C-array [Giao dich][Thuoc tinh cua giao dich][Gia tri thuoc tinh]
 void mainMenuSwitch(int option, const char* menuItems[6], books books, users users, transactions trans, bool &exitFlag) {
     const char notice_prompt[] = "Ban da chon: ";
     switch (option) {
@@ -260,6 +298,10 @@ void mainMenuSwitch(int option, const char* menuItems[6], books books, users use
     }
 }
 
+// Call ham printMenu() va truyen gia tri nhan duoc tu printMenu() den switch-case mainMenu de execute cac subOption neu input valid
+// users users --> 3D C-array chua [Nguoi dung][Thuoc tinh nguoi dung][Gia tri cua thuoc tinh]
+// books books --> 3D C-array [Sach][Thuoc tinh cua sach][Gia tri thuoc tinh]
+// transactions trans --> 3D C-array [Giao dich][Thuoc tinh cua giao dich][Gia tri thuoc tinh]
 void mainMenu(books books, users users, transactions trans) {
     int option;
     bool exitFlag = false;
@@ -283,18 +325,11 @@ void mainMenu(books books, users users, transactions trans) {
     } while (true);
 }
 
-void countBorrowedBooks(const books books, const users users) {
-    cout << "Thống kê sách đang mượn (chưa triển khai)." << endl;
-}
-
-void listOverdueReaders(const users users) {
-    cout << "Danh sách độc giả trễ hạn (chưa triển khai)." << endl;
-}
-
 /***************************************************************************************************************************************
                                                       Transactions
  ***************************************************************************************************************************************/
 
+// Declare cac thuoc tinh cua moi transaction
 const char trans_att_0[] {"Ma doc gia"};
 const char trans_att_1[] {"Ngay muon"};
 const char trans_att_2[] {"Ngay tra du kien"};
@@ -302,16 +337,21 @@ const char trans_att_3[] {"Ngay tra thuc te"};
 const char trans_att_4[] {"ISBN"};
 const char trans_att_5[] {"Phi phai tra"};
 
+// Gom cac thuoc tinh thanh array 
 const char* transaction_atts[6] = {
     trans_att_0, trans_att_1, trans_att_2, trans_att_3, trans_att_4, trans_att_5
 };
 
+// Tim ngay hien tai theo he thong
+// char* date --> char array dung de chua gia tri ngay sau khi format
 void getCurrentDate(char* date) {
-    time_t now = time(nullptr);
-    tm* local_time = localtime(&now);
-    strftime(date, DATE_LENGTH, "%d/%m/%Y", local_time);
+    time_t now = time(nullptr); // Lay gia tri epoch hien tai
+    tm* local_time = localtime(&now); // convert theo timezone
+    strftime(date, DATE_LENGTH, "%d/%m/%Y", local_time); // ghi de ngay hien tai theo format dd-mm-yyyy vao tham so date
 }
 
+// Tim ngay het han (48 thang ke tu ngay hien tai)
+// char* date --> char array dung de chua gia tri ngay sau khi format
 void getDueDate(char* date) {
     time_t now = time(nullptr);
     now += MAX_BORROW_DAYS * 24 * 60 * 60;
@@ -319,6 +359,34 @@ void getDueDate(char* date) {
     strftime(date, DATE_LENGTH, "%d/%m/%Y", due_time);
 }
 
+// Convert gia tri ngay sang integer
+// Return gia tri ngay theo int de dung cho viec so sanh 2 dates de dang hon
+// char* date --> char array dung de chua gia tri ngay sau khi format
+int dateToInt(const char* date) {
+    char day[3], month[3], year[5];
+    strncpy(day, date, 2); day[2] = '\0';
+    strncpy(month, date + 3, 2); month[2] = '\0';
+    strncpy(year, date + 6, 4); year[4] = '\0';
+    
+    int d = atoi(day);
+    int m = atoi(month);
+    int y = atoi(year);
+    
+    return y * 10000 + m * 100 + d;
+}
+
+// So sanh giua ngay het han (expiryDate) va ngay hien tai cua he thong (currentDate)
+// Return type: bool
+// const char* expiryDate --> pointer tro den gia tri ngay het han
+// const char* currentDate --> pointer tro den gia tri ngay hien tai
+bool isMembershipExpired(const char* expiryDate, const char* currentDate) {
+    int expiryInt = dateToInt(expiryDate);
+    int currentInt = dateToInt(currentDate);
+    return expiryInt < currentInt;
+}
+
+// Khoi tao mang chua cac transactions
+// transactions trans --> 3D C-array [Giao dich][Thuoc tinh cua giao dich][Gia tri thuoc tinh]
 void transactionsConstructor(transactions trans) {
     const char prompt[] {"Hoan tat khoi tao danh sach giao dich!"};
     
@@ -328,31 +396,35 @@ void transactionsConstructor(transactions trans) {
         }
     }
 
-    strncpy(trans[0][0], "DG001", BOOKNAME_MAXLENGTH);
-    trans[0][0][BOOKNAME_MAXLENGTH - 1] = '\0';
+    // Dummy data
+    // strncpy(trans[0][0], "DG001", BOOKNAME_MAXLENGTH);
+    // trans[0][0][BOOKNAME_MAXLENGTH - 1] = '\0';
     
-    strncpy(trans[0][1], "01/04/2025", BOOKNAME_MAXLENGTH);
-    trans[0][1][BOOKNAME_MAXLENGTH - 1] = '\0';
+    // strncpy(trans[0][1], "01/04/2025", BOOKNAME_MAXLENGTH);
+    // trans[0][1][BOOKNAME_MAXLENGTH - 1] = '\0';
     
-    strncpy(trans[0][2], "08/04/2025", BOOKNAME_MAXLENGTH);
-    trans[0][2][BOOKNAME_MAXLENGTH - 1] = '\0';
+    // strncpy(trans[0][2], "08/04/2025", BOOKNAME_MAXLENGTH);
+    // trans[0][2][BOOKNAME_MAXLENGTH - 1] = '\0';
     
-    trans[0][3][0] = '\0';
+    // trans[0][3][0] = '\0';
     
-    strncpy(trans[0][4], "0;1", BOOKNAME_MAXLENGTH);
-    trans[0][4][BOOKNAME_MAXLENGTH - 1] = '\0';
+    // strncpy(trans[0][4], "0;1", BOOKNAME_MAXLENGTH);
+    // trans[0][4][BOOKNAME_MAXLENGTH - 1] = '\0';
     
-    strncpy(trans[0][5], "0", BOOKNAME_MAXLENGTH);
-    trans[0][5][BOOKNAME_MAXLENGTH - 1] = '\0';
+    // strncpy(trans[0][5], "0", BOOKNAME_MAXLENGTH);
+    // trans[0][5][BOOKNAME_MAXLENGTH - 1] = '\0';
 
     cout << ".\n.\n" << prompt << "\n.\n.\n";
 }
 
+// Dung cac gia tri thuoc tinh cua transaction array de print out table header theo format
 void printTransactionTableHeader() {
     const int colWidth = 20;
     cout << left;
     for (size_t i = 0; i < 6; ++i) {
-        for (int j = 0; j < colWidth + 3; ++j) cout << "-";
+        for (int j = 0; j < colWidth + 3; ++j) {
+            cout << "-";
+        }
     }
     cout << "+" << endl;
     for (size_t i = 0; i < 6; ++i) {
@@ -363,11 +435,16 @@ void printTransactionTableHeader() {
     }
     cout << "|" << endl;
     for (size_t i = 0; i < 6; ++i) {
-        for (int j = 0; j < colWidth + 3; ++j) cout << "-";
+        for (int j = 0; j < colWidth + 3; ++j) {
+            cout << "-";
+        }
     }
     cout << "+" << endl;
 }
 
+// Print out tung record trong transaction array transaction[thuoc tinh][gia tri thuoc tinh]
+// int transIndex --> index cua transaction can print out trong transactions array
+// transactions trans --> 3D C-array [Giao dich][Thuoc tinh cua giao dich][Gia tri thuoc tinh]
 void printTransactionRow(int transIndex, const transactions trans) {
     const int colWidth = 20;
     cout << left;
@@ -385,6 +462,9 @@ void printTransactionRow(int transIndex, const transactions trans) {
     cout << "|" << endl;
 }
 
+// Combined function giua printTransactionTableHeader() va printTransactionRow de print 1 transaction voi day du header va record
+// int transIndex --> index cua transaction can print out trong transactions array
+// transactions trans --> 3D C-array [Giao dich][Thuoc tinh cua giao dich][Gia tri thuoc tinh]
 void displayTransaction(int transIndex, const transactions trans) {
     char invalid_index_prompt[] {"Invalid index.\n"};
     if (transIndex < 0 || transIndex >= TRANSACTION_COUNT_MAX) {
@@ -409,6 +489,15 @@ void createTransaction(transactions trans, const users users, books books) {
         return;
     }
 
+    // Trich xuat ngay hien tai (currentDate) va kiem tra xem membership co het han hay chua
+    char currentDate[DATE_LENGTH];
+    getCurrentDate(currentDate);
+    size_t expiryDateIndex = 8; // Thuoc tinh 'Ngay het han' co index so 8
+    if (isMembershipExpired(users[userIndex][expiryDateIndex], currentDate)) {
+        cout << "Khong the tao giao dich --> The sach da het han" << endl;
+        return;
+    }
+
     size_t transIndex = 0;
     while (transIndex < TRANSACTION_COUNT_MAX && trans[transIndex][0][0] != '\0') {
         ++transIndex;
@@ -420,7 +509,6 @@ void createTransaction(transactions trans, const users users, books books) {
 
     strncpy(trans[transIndex][0], users[userIndex][0], USERNAME_MAXLENGTH);
     
-    char currentDate[DATE_LENGTH];
     char dueDate[DATE_LENGTH];
     getCurrentDate(currentDate);
     getDueDate(dueDate);
@@ -472,6 +560,8 @@ void createTransaction(transactions trans, const users users, books books) {
     displayTransaction(transIndex, trans);
 }
 
+// Kiem tra date input co dung dinh dang ngay hay khong
+// const char* date --> pointer tro den gia tri date can kiem tra
 bool validateDate(const char* date) {
     if (strlen(date) != 10) {
         return false;
@@ -491,6 +581,9 @@ bool validateDate(const char* date) {
     return true;
 }
 
+// Tinh toan so ngay chenh lenh giua 2 input date dau vao
+// const char* startDate --> pointer tro den gia tri ngay bat dau
+// const char* endDate --> pointer tro den gia tri ngay ket thuc
 int calculateDaysDifference(const char* startDate, const char* endDate) {
     tm start = {}, end = {};
     sscanf(startDate, "%d/%d/%d", &start.tm_mday, &start.tm_mon, &start.tm_year);
@@ -507,6 +600,13 @@ int calculateDaysDifference(const char* startDate, const char* endDate) {
     return difftime(endTime, startTime) / (24 * 60 * 60);
 }
 
+// Tinh toan khoan tien phat (neu co) bao gom Overdue va bookLost
+// const char* dueDate --> pointer tro den gia tri 'Ngay tra du kien' cua transaction
+// const char* returnDate --> pointer tro den gia 'Ngay tra thuc te' ghi nhan duoc
+// books books --> 3D C-array [Sach][Thuoc tinh cua sach][Gia tri thuoc tinh]
+// const char* isbn --> pointer tro den gia tri isbn cua transaction
+// bool isLost --> ghi nhan sach bi mat (neu co) ti tinh khoan phat cho bookLost
+// Return type: Double --> Gia tri khoan phat
 double calculateFine(const char* dueDate, const char* returnDate, const books books, const char* isbn, bool isLost) {
     double fine = 0.0;
     
@@ -537,6 +637,7 @@ double calculateFine(const char* dueDate, const char* returnDate, const books bo
     return fine;
 }
 
+
 int findTransactionIndex(const transactions trans, const char* userID) {
     for (size_t i = 0; i < TRANSACTION_COUNT_MAX; ++i) {
         if (strcmp(trans[i][0], userID) == 0 && trans[i][3][0] == '\0') {
@@ -546,6 +647,10 @@ int findTransactionIndex(const transactions trans, const char* userID) {
     return -1;
 }
 
+// Ham thuc thi cho viec hoan tra sach
+// transactions trans --> 3D C-array [Giao dich][Thuoc tinh cua giao dich][Gia tri thuoc tinh]
+// books books --> 3D C-array [Sach][Thuoc tinh cua sach][Gia tri thuoc tinh]
+// users users --> 3D C-array chua [Nguoi dung][Thuoc tinh nguoi dung][Gia tri cua thuoc tinh]
 void returnBook(transactions trans, books books, users users) {
     cout << "Tra sach" << endl;
     
@@ -626,10 +731,14 @@ void returnBook(transactions trans, books books, users users) {
     displayTransaction(transIndex, trans);
 }
 
+// Ham thuc thi hien thi danh sach cac transactions hien co
+// transactions trans --> 3D C-array [Giao dich][Thuoc tinh cua giao dich][Gia tri thuoc tinh]
+// books books --> 3D C-array [Sach][Thuoc tinh cua sach][Gia tri thuoc tinh]
+// users users --> 3D C-array chua [Nguoi dung][Thuoc tinh nguoi dung][Gia tri cua thuoc tinh]
 void listBorrowedBooks(const transactions trans, const books books, const users users) {
     bool hasBorrowedBooks = false;
     
-    cout << "\n=== Danh Sach Sach Dang Duoc Muon ===\n";
+    cout << "\n------ Danh Sach Sach Dang Duoc Muon ------\n";
     cout << setw(15) << left << "Ma Doc Gia"
          << setw(20) << "Ten Doc Gia"
          << setw(15) << "ISBN"
@@ -701,32 +810,26 @@ void listBorrowedBooks(const transactions trans, const books books, const users 
     cout << endl << endl;
 }
 
-int dateToInt(const char* date) {
-    char day[3], month[3], year[5];
-    strncpy(day, date, 2); day[2] = '\0';
-    strncpy(month, date + 3, 2); month[2] = '\0';
-    strncpy(year, date + 6, 4); year[4] = '\0';
-    
-    int d = atoi(day);
-    int m = atoi(month);
-    int y = atoi(year);
-    
-    return y * 10000 + m * 100 + d;
-}
-
+// DUng ham dateToInt de chuyen 2 ngay can so sanh o dang char[] ve Int cho de so sanh
+// const char* expectedDate --> pointer tro den gia tri cua 'Ngay tra du kien'
+// const char* currentDate --> pointer tro den gia tri cua 'Ngay hien tai'
 bool isOverdue(const char* expectedDate, const char* currentDate) {
     int expectedInt = dateToInt(expectedDate);
     int currentInt = dateToInt(currentDate);
     return expectedInt < currentInt;
 }
 
+// Hien thi cac transaction da qua han
+// transactions trans --> 3D C-array [Giao dich][Thuoc tinh cua giao dich][Gia tri thuoc tinh]
+// books books --> 3D C-array [Sach][Thuoc tinh cua sach][Gia tri thuoc tinh]
+// users users --> 3D C-array chua [Nguoi dung][Thuoc tinh nguoi dung][Gia tri cua thuoc tinh]
 void listOverdueBorrows(const transactions trans, const books books, const users users) {
     bool hasOverdueBorrows = false;
     
     char currentDate[DATE_LENGTH];
     getCurrentDate(currentDate);
     
-    cout << "\n=== Danh Sach Muon Qua Han ===\n";
+    cout << "\n------ Danh Sach Muon Qua Han ------\n";
     cout << setw(10) << left << "Ma Doc Gia"
          << setw(20) << "Ten Doc Gia"
          << setw(15) << "ISBN"
