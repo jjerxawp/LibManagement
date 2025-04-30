@@ -583,7 +583,7 @@ bool validateDate(const char* dateStr) {
 
     // Basic range checks
     if (month < 1 || month > 12) return false;
-    if (year < 1900 || year > 2025) return false; // Reasonable year range
+    if (year < 1900 || year > 2100) return false; // Reasonable year range
     if (day < 1) return false;
 
     // Check days in month
