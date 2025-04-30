@@ -560,22 +560,44 @@ void createTransaction(transactions trans, const users users, books books) {
     displayTransaction(transIndex, trans);
 }
 
-// Kiem tra date input co dung dinh dang ngay hay khong
+// Kiem tra date input co dung dinh dang ngay hay khong, nam sinh phai trong khoang 1900 - 2025
 // const char* date --> pointer tro den gia tri date can kiem tra
-bool validateDate(const char* date) {
-    if (strlen(date) != 10) {
-        return false;
-    }
 
-    if (date[2] != '/' || date[5] != '/') {
-        return false;
-    }
+bool validateDate(const char* dateStr) {
+    // Check length (must be 10: dd/mm/yyyy)
+    if (strlen(dateStr) != 10) return false;
 
-    for (int i = 0; i < 10; ++i) {
-        if (i == 2 || i == 5) continue;
-        if (!isdigit(date[i])) {
-            return false;
-        }
+    // Check format (dd/mm/yyyy)
+    if (dateStr[2] != '/' || dateStr[5] != '/') return false;
+
+    // Extract day, month, year
+    char dayStr[3] = {0}, monthStr[3] = {0}, yearStr[5] = {0};
+    strncpy(dayStr, dateStr, 2);
+    strncpy(monthStr, dateStr + 3, 2);
+    strncpy(yearStr, dateStr + 6, 4);
+
+    // Convert to integers
+    int day = atoi(dayStr);
+    int month = atoi(monthStr);
+    int year = atoi(yearStr);
+
+    // Basic range checks
+    if (month < 1 || month > 12) return false;
+    if (year < 1900 || year > 2025) return false; // Reasonable year range
+    if (day < 1) return false;
+
+    // Check days in month
+    int daysInMonth[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    // Adjust February for leap years
+    if (month == 2 && (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0))) {
+        daysInMonth[1] = 29;
+    }
+    if (day > daysInMonth[month - 1]) return false;
+
+    // Ensure all characters are digits except slashes
+    for (int i = 0; i < 10; i++) {
+        if (i == 2 || i == 5) continue; // Skip slashes
+        if (!isdigit(dateStr[i])) return false;
     }
 
     return true;

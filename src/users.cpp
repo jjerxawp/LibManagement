@@ -4,6 +4,8 @@
 #include <ctime>
 #include <cstring>
 #include "users.hpp"
+#include "books.hpp"
+#include "library.hpp"
 
 using namespace std;
 
@@ -180,9 +182,48 @@ void displayAllUsers(const users users) {
     }
 }
 
+// bool validateDate(const char* dateStr) {
+//     // Check length (must be 10: dd/mm/yyyy)
+//     if (strlen(dateStr) != 10) return false;
+
+//     // Check format (dd/mm/yyyy)
+//     if (dateStr[2] != '/' || dateStr[5] != '/') return false;
+
+//     // Extract day, month, year
+//     char dayStr[3] = {0}, monthStr[3] = {0}, yearStr[5] = {0};
+//     strncpy(dayStr, dateStr, 2);
+//     strncpy(monthStr, dateStr + 3, 2);
+//     strncpy(yearStr, dateStr + 6, 4);
+
+//     // Convert to integers
+//     int day = atoi(dayStr);
+//     int month = atoi(monthStr);
+//     int year = atoi(yearStr);
+
+//     // Basic range checks
+//     if (month < 1 || month > 12) return false;
+//     if (year < 1900 || year > 2025) return false; // Reasonable year range
+//     if (day < 1) return false;
+
+//     // Check days in month
+//     int daysInMonth[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+//     // Adjust February for leap years
+//     if (month == 2 && (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0))) {
+//         daysInMonth[1] = 29;
+//     }
+//     if (day > daysInMonth[month - 1]) return false;
+
+//     // Ensure all characters are digits except slashes
+//     for (int i = 0; i < 10; i++) {
+//         if (i == 2 || i == 5) continue; // Skip slashes
+//         if (!isdigit(dateStr[i])) return false;
+//     }
+
+//     return true;
+// }
+
 // Ham dung de add them user vao array
 // users users --> 3D C-array chua [Nguoi dung][Thuoc tinh nguoi dung][Gia tri cua thuoc tinh]
-
 void addUser(users users) {
     int index = findEmptyUserSlot(users);
     if (index == -1) {
@@ -190,19 +231,139 @@ void addUser(users users) {
         return;
     }
 
-    // Yeu cau user nhap day du cac thong tin cua the sach
-    for (size_t i = 0; i < USERATT_COUNT - 2; ++i) {
-        cout << "Nhap " << user_atts[i] << ": ";
-        cin.getline(users[index][i], USERNAME_MAXLENGTH);
+    char inputBuffer[USERNAME_MAXLENGTH] = {0};
+    bool validInput = false;
+
+    // Ma doc gia (User ID) - Must be unique and non-empty
+    while (!validInput) {
+        cout << "Nhap " << user_atts[0] << ": ";
+        cin.getline(inputBuffer, USERNAME_MAXLENGTH);
+        if (isNonEmptyString(inputBuffer)) {
+            // Check if user ID already exists
+            int existingIndex = findUserIndexByID(users, inputBuffer); // Assume this function exists
+            if (existingIndex != -1) {
+                cout << "Ma doc/date gia '" << inputBuffer << "' da ton tai trong thu vien!" << endl;
+                cout << "Thong tin doc gia hien co:" << endl;
+                displayUser(existingIndex, users);
+                cout << "Vui long nhap Ma doc gia khac." << endl;
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                continue;
+            }
+            validInput = true;
+            strncpy(users[index][0], inputBuffer, USERNAME_MAXLENGTH);
+            users[index][0][USERNAME_MAXLENGTH - 1] = '\0';
+        } else {
+            cout << "Ma doc gia khong hop le, vui long nhap lai." << endl;
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
     }
 
-    // Gan ngay lap the doc gia voi ngay hien tai
+    // Ho ten (Full Name) - Must be non-empty
+    validInput = false;
+    while (!validInput) {
+        cout << "Nhap " << user_atts[1] << ": ";
+        cin.getline(inputBuffer, USERNAME_MAXLENGTH);
+        if (isNonEmptyString(inputBuffer)) {
+            validInput = true;
+            strncpy(users[index][1], inputBuffer, USERNAME_MAXLENGTH);
+            users[index][1][USERNAME_MAXLENGTH - 1] = '\0';
+        } else {
+            cout << "Ho ten khong hop le, vui long nhap lai." << endl;
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+    }
+
+    // CMND (ID Number) - Must be numeric and non-empty
+    validInput = false;
+    while (!validInput) {
+        cout << "Nhap " << user_atts[2] << ": ";
+        cin.getline(inputBuffer, USERNAME_MAXLENGTH);
+        if (isValidNumeric(inputBuffer)) {
+            validInput = true;
+            strncpy(users[index][2], inputBuffer, USERNAME_MAXLENGTH);
+            users[index][2][USERNAME_MAXLENGTH - 1] = '\0';
+        } else {
+            cout << "CMND phai la so nguyen hop le, vui long nhap lai." << endl;
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+    }
+
+    // Ngay sinh (Date of Birth) - Must be in dd/mm/yyyy format
+    validInput = false;
+    while (!validInput) {
+        cout << "Nhap " << user_atts[3] << " (dd/mm/yyyy): ";
+        cin.getline(inputBuffer, USERNAME_MAXLENGTH);
+        if (validateDate(inputBuffer)) {
+            validInput = true;
+            strncpy(users[index][3], inputBuffer, USERNAME_MAXLENGTH);
+            users[index][3][USERNAME_MAXLENGTH - 1] = '\0';
+        } else {
+            cout << "Ngay sinh khong hop le, vui long nhap lai theo dinh dang dd/mm/yyyy." << endl;
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+    }
+
+    // Gioi tinh (Gender) - Must be non-empty
+    validInput = false;
+    while (!validInput) {
+        cout << "Nhap " << user_atts[4] << ": ";
+        cin.getline(inputBuffer, USERNAME_MAXLENGTH);
+        if (isNonEmptyString(inputBuffer)) {
+            validInput = true;
+            strncpy(users[index][4], inputBuffer, USERNAME_MAXLENGTH);
+            users[index][4][USERNAME_MAXLENGTH - 1] = '\0';
+        } else {
+            cout << "Gioi tinh khong hop le, vui long nhap lai." << endl;
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+    }
+
+    // Email - Must be non-empty (could add email format validation)
+    validInput = false;
+    while (!validInput) {
+        cout << "Nhap " << user_atts[5] << ": ";
+        cin.getline(inputBuffer, USERNAME_MAXLENGTH);
+        if (isNonEmptyString(inputBuffer)) {
+            // Optional: Add email format validation if needed
+            validInput = true;
+            strncpy(users[index][5], inputBuffer, USERNAME_MAXLENGTH);
+            users[index][5][USERNAME_MAXLENGTH - 1] = '\0';
+        } else {
+            cout << "Email khong hop le, vui long nhap lai." << endl;
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+    }
+
+    // Dia chi (Address) - Must be non-empty
+    validInput = false;
+    while (!validInput) {
+        cout << "Nhap " << user_atts[6] << ": ";
+        cin.getline(inputBuffer, USERNAME_MAXLENGTH);
+        if (isNonEmptyString(inputBuffer)) {
+            validInput = true;
+            strncpy(users[index][6], inputBuffer, USERNAME_MAXLENGTH);
+            users[index][6][USERNAME_MAXLENGTH - 1] = '\0';
+        } else {
+            cout << "Dia chi khong hop le, vui long nhap lai." << endl;
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+    }
+
+    // Ngay lap the (Registration Date) - Set to current date
     char currentDate[11];
     getCurrentDate(currentDate, sizeof(currentDate));
     strncpy(users[index][7], currentDate, USERNAME_MAXLENGTH);
     users[index][7][USERNAME_MAXLENGTH - 1] = '\0';
 
-    // Tinh toan ngay het han cua the doc gia
+    // Ngay het han (Expiry Date) - Calculated from current date
     char expiryDate[11];
     getExpiryDate(expiryDate, sizeof(expiryDate), currentDate);
     strncpy(users[index][8], expiryDate, USERNAME_MAXLENGTH);

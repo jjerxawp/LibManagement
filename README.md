@@ -5,9 +5,9 @@
 
 - **CMake** (version 3.10 or higher)
 
-## Configuration and Build Instructions
+## Configuration && Build 
 
-Follow these steps to configure, build, and run the project:
+*Thuc hien cac buoc sau:*
 
 1. **Di den thu muc cua project**:
    ```bash
@@ -17,16 +17,17 @@ Follow these steps to configure, build, and run the project:
 2. **Tao thu muc chua build configs**:
    ```bash
    mkdir build
+   cd build
    ```
 
 3. **Thuc hien configurate project voi CMake CLI CMake**:
    ```bash
-   cmake ./build
+   cmake ..
    ```
 
 4. **Build project**:
    ```bash
-   cmake --build ./build
+   cmake --build .
    ```
 
 5. **Run app**:
